@@ -1,5 +1,5 @@
 from googleapiclient.discovery import build
-from extract_load import settings
+from . import settings
 
 class YoutubeClient:
     def __init__(self):
