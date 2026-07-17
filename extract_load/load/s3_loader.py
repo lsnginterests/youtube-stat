@@ -31,7 +31,7 @@ class S3RawSink:
         ts_str = S3RawSink.dttm_to_str(ts)
         date_str = ts.strftime('%Y-%m-%d')
 
-        data_dir = f'youtube/{data_type}s/channel_id={channel_id}/date={date_str}/'
+        data_dir = f'youtube/{data_type}s/ingestion_date={date_str}/channel_id={channel_id}/'
         file_name = f'{data_type}_{ts_str}.json'
         path = data_dir + file_name
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")

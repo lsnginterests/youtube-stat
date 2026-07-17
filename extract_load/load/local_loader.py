@@ -27,7 +27,7 @@ class LocalRawSink:
         ts_str = LocalRawSink.dttm_to_str(ts)
         date_str = ts.strftime('%Y-%m-%d')
 
-        data_dir = base.joinpath(f'{data_type}s/channel_id={channel_id}/date={date_str}')
+        data_dir = base.joinpath(f'{data_type}s/ingestion_date={date_str}/channel_id={channel_id}')
         data_dir.mkdir(parents=True, exist_ok=True)
 
         file_name = f'{data_type}_{ts_str}.json'
