@@ -28,11 +28,10 @@ class S3RawSink:
         }
 
     def _save_data(self, data_type: str, channel_id: str, data: dict, ts: datetime) -> str:
-        ts_str = S3RawSink.dttm_to_str(ts)
-        date_str = ts.strftime('%Y-%m-%d')
+        date_str = self.dttm_to_str(ts)
 
         data_dir = f'youtube/{data_type}s/ingestion_date={date_str}/channel_id={channel_id}/'
-        file_name = f'{data_type}_{ts_str}.json'
+        file_name = f'{data_type}_{date_str}.json'
         path = data_dir + file_name
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")
 
@@ -53,4 +52,4 @@ class S3RawSink:
     
     @staticmethod
     def dttm_to_str(ts: datetime) -> str:
-        return ts.strftime('%Y-%m-%d_%H-%M-%S')
+        return ts.strftime('%Y-%m-%d')
