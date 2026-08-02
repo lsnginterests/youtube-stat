@@ -5,7 +5,6 @@ ICEBERG_VERSION = '1.7.1'
 ICEBERG_PACKAGE = f'org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:{ICEBERG_VERSION}'
 
 CATALOG = 'local'
-# Iceberg-warehouse живёт над lakehouse (silver/gold), рядом с bronze — не внутри setting/
 WAREHOUSE = Path(__file__).resolve().parent.parent.joinpath('lakehouse')
 
 
