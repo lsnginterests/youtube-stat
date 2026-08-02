@@ -225,3 +225,7 @@ docs/
 # Тестовые/временные директории, файлы
 local_base/
 extract_load/load/local_loader.py
+
+# Данные и артефакты Spark/Iceberg — генерируются локально, в git не хранятся
+spark-warehouse/
+dataplatform/lakehouse/*
