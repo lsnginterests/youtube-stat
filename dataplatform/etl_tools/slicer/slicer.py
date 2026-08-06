@@ -23,21 +23,21 @@ class Slicer:
         self._new_watermark = df.select(f.max(f.col(self._slice_column))).first()[0]
         return df
 
-    def commit(self):
+    def commit(self) -> None:
         if self._new_watermark:
             self._registry.advance(self._table, str(self._new_watermark))
             self._new_watermark = None
 
-    def validate(self):
+    def validate(self) -> None:
         self.validate_table()
         self.validate_column()
 
-    def validate_column(self):
+    def validate_column(self) -> None:
         columns = self._session.catalog.listColumns(self._table)
         if not any(col.name == self._slice_column for col in columns):
             raise ValueError(f'datetime column {self._slice_column} does not exist in table {self._table}')
 
-    def validate_table(self):
+    def validate_table(self) -> None:
         if not self._session.catalog.tableExists(self._table):
             raise ValueError(f'table {self._table} does not exist')
 
@@ -47,13 +47,13 @@ class Slicer:
         except (TypeError, ValueError) as e:
             raise ValueError(f'invalid watermark {dttm!r} for table {self._table} in slice registry') from e
 
-    def to_dataframe(self):
+    def to_dataframe(self) -> DataFrame:
         reader = self._session.read
         if self._snapshot_id:
             reader = reader.option('snapshot-id', self._snapshot_id)
         return reader.table(self._table)
 
-    def current_snapshot(self):
+    def current_snapshot(self) -> int | None:
         row = self._session.sql(f'select snapshot_id from {self._table}.refs where name = "main"').first()
         self._snapshot_id = row[0] if row else None
         return self._snapshot_id

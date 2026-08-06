@@ -1,12 +1,11 @@
 from pyspark.sql import functions as f
-from pyspark.sql import DataFrame
 
 from dataplatform.etl_tools.loaders.loader import Loader
 
 class SCD1Loader(Loader):
     _WRITE_MODES = ['insert', 'upsert', 'rewrite']
 
-    def run(self):
+    def run(self) -> None:
         self.validate_mode()
         self.validate_output()
         match self._mode:
@@ -17,12 +16,12 @@ class SCD1Loader(Loader):
             case 'rewrite':
                 self.run_rewrite()
 
-    def run_insert(self) -> DataFrame:
+    def run_insert(self) -> str:
         self._input = SCD1Loader.processed_dttm(self._input)
         self._input.writeTo(self._output).append()
         return self._output
 
-    def run_upsert(self) -> DataFrame:
+    def run_upsert(self) -> str:
         self._input = SCD1Loader.processed_dttm(self._input)
         self._input.createOrReplaceTempView('to_upsert')
         compare_columns = [col for col in self._input.columns if col not in self._key_columns and col != self._PROCESSED_COLUMN]
@@ -36,11 +35,11 @@ class SCD1Loader(Loader):
             ''')
         return self._output
 
-    def run_rewrite(self) -> DataFrame:
+    def run_rewrite(self) -> str:
         self._input = self.processed_dttm(self._input)
         self._input.writeTo(self._output).overwrite(f.lit(True))
         return self._output
 
-    def validate_mode(self):
+    def validate_mode(self) -> None:
         if self._mode not in self._WRITE_MODES:
             raise ValueError(f'Unknown write mode, expected one of: {self._WRITE_MODES}')

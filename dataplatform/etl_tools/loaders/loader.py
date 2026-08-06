@@ -12,16 +12,16 @@ class Loader:
         self._mode = mode
         self._session = get_spark()
 
-    def validate_output(self):
+    def validate_output(self) -> None:
         if not self._session.catalog.tableExists(self._output):
             raise ValueError(f'Output table {self._output} does not exist')
 
     @staticmethod
-    def processed_dttm(dataframe: DataFrame):
+    def processed_dttm(dataframe: DataFrame) -> DataFrame:
         return dataframe.withColumn(Loader._PROCESSED_COLUMN, f.current_timestamp())
 
     @staticmethod
-    def generate_join_conditions(left_prefix, right_prefix, columns: list[str]):
+    def generate_join_conditions(left_prefix: str, right_prefix: str, columns: list[str]) -> str:
         if not columns:
             raise ValueError('Field columns have not to be empty')
         string = f'on {left_prefix}.{columns[0]} = {right_prefix}.{columns[0]}'
