@@ -33,9 +33,9 @@ merged = load_channels.join(spark.table('local.silver.h_channel'), 'channel_id',
 to_load = merged.groupBy(f.col('channel_id')) \
     .agg(f.min('created_at').alias('created_at'))
 
-loader = SCD1Loader(to_load, 'local.silver.h_channel', ['channel_id'], 'upsert')
-loader.run()
-slicer.commit()
+if not to_load.isEmpty():
+    loader = SCD1Loader(to_load, 'local.silver.h_channel', ['channel_id'], 'upsert')
+    loader.run()
+    slicer.commit()
 
-spark.sql('select * from local.silver.h_channel').show()
 spark.stop()

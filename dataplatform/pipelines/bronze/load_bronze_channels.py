@@ -65,8 +65,8 @@ to_load = spark.read.schema(schema) \
         f.col('i.statistics.subscriberCount').cast('int').alias('subscriberCount')
     )
 
-loader = SCD1Loader(to_load, 'local.bronze.channels', ['id', 'calendar_dt'], 'upsert')
-loader.run()
+if not to_load.isEmpty():
+    loader = SCD1Loader(to_load, 'local.bronze.channels', ['id', 'calendar_dt'], 'upsert')
+    loader.run()
 
-spark.sql('select * from local.bronze.channels').show()
 spark.stop()
