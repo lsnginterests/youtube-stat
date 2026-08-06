@@ -19,7 +19,7 @@ spark.sql('''
         created_at timestamp,
         processed_dttm timestamp
     ) using iceberg
-    partitioned by (created_at)
+    partitioned by (years(created_at))
     ''')
 
 local_bronze_channels = slicer.run()
