@@ -33,8 +33,8 @@ class Slicer:
         self.validate_column()
 
     def validate_column(self) -> None:
-        columns = self._session.catalog.listColumns(self._table)
-        if not any(col.name == self._slice_column for col in columns):
+        columns = self._session.table(self._table).columns
+        if not any(col == self._slice_column for col in columns):
             raise ValueError(f'datetime column {self._slice_column} does not exist in table {self._table}')
 
     def validate_table(self) -> None:
