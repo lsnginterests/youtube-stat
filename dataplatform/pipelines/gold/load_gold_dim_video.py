@@ -14,7 +14,6 @@ slicer = Slicer(
 spark.sql('''
     create table if not exists local.gold.dim_video (
         video_id string,
-        channel_id string,
         created_at timestamp,
         title string,
         description string,
@@ -28,6 +27,9 @@ spark.sql('''
         license boolean,
         content_rating string,
         projection string,
+        privacy_status string,
+        upload_status string,
+        is_available boolean,
         valid_from_dttm timestamp,
         valid_to_dttm timestamp,
         processed_dttm timestamp
@@ -36,20 +38,14 @@ spark.sql('''
 ''')
 
 local_silver_h_video = spark.table('local.silver.h_video')
-local_silver_l_video_channel = spark.table('local.silver.l_video_channel').select('video_id', 'channel_id')
 local_silver_s_video = slicer.run()
 
 to_load = local_silver_h_video.join(
     other=local_silver_s_video,
     on='video_id',
     how='inner'
-).join(
-    other=local_silver_l_video_channel,
-    on='video_id',
-    how='inner'
 ).select(
     'video_id',
-    'channel_id',
     'created_at',
     'title',
     'description',
@@ -63,6 +59,9 @@ to_load = local_silver_h_video.join(
     'license',
     'content_rating',
     'projection',
+    'privacy_status',
+    'upload_status',
+    'is_available',
     'valid_from_dttm'
 )
 
