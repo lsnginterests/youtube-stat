@@ -14,3 +14,8 @@ class Extractor:
             'channel_data': channel,
             'video_data': video
         }
+
+    def extract_category_data(self, region_code: str, language: str):
+        return {
+            'category_data': self.client.get_category_data(region_code, language)
+        }

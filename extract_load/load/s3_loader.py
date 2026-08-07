@@ -27,6 +27,10 @@ class S3RawSink:
             'video_path': video_path
         }
 
+    def write_reference(self, data: dict) -> dict:
+        ingestion_ts = datetime.now()
+        return {'category_path': self.write_category(data['category_data'], ingestion_ts)}
+
     def _save_data(self, data_type: str, channel_id: str, data: dict, ts: datetime) -> str:
         date_str = self.dttm_to_str(ts)
 
@@ -49,6 +53,17 @@ class S3RawSink:
 
     def write_channel(self, channel_id: str, data: dict, ts: datetime):
         return S3RawSink._save_data(self, 'channel', channel_id, data, ts)
+
+    def write_category(self, data: dict, ts: datetime) -> str:
+        date_str = self.dttm_to_str(ts)
+        path = f'youtube/categories/ingestion_date={date_str}/category_{date_str}.json'
+        self._client.put_object(
+            Bucket = self.bucket,
+            Key = path,
+            Body = json.dumps(data, ensure_ascii=False).encode("utf-8"),
+            ContentType = 'application/json'
+        )
+        return path
     
     @staticmethod
     def dttm_to_str(ts: datetime) -> str:

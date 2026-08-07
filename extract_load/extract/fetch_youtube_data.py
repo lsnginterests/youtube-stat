@@ -45,6 +45,15 @@ class YoutubeClient:
             responses.append(response)
         return responses
     
+    def get_category_data(self, region_code: str, language: str) -> dict:
+        request = self._client.videoCategories().list(
+            part = 'snippet',
+            regionCode = region_code,
+            hl = language
+        )
+        response = request.execute()
+        return response
+
     @staticmethod
     def get_playlist_id(channel_data: dict) -> str:
         items = channel_data.get('items', [])
