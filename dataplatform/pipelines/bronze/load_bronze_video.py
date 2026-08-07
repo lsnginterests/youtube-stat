@@ -35,6 +35,8 @@ spark.sql('''
         likecount bigint,
         favoriteCount bigint,
         commentCount bigint,
+        privacyStatus string,
+        uploadStatus string,
         processed_dttm timestamp
     )  using iceberg
     partitioned by (calendar_dt)
@@ -67,6 +69,10 @@ schema = t.StructType([
                 t.StructField('likeCount', t.StringType()),
                 t.StructField('favoriteCount', t.StringType()),
                 t.StructField('commentCount', t.StringType())
+            ])),
+            t.StructField('status', t.StructType([
+                t.StructField('privacyStatus', t.StringType()),
+                t.StructField('uploadStatus', t.StringType())
             ]))
         ])
     ))
@@ -100,7 +106,9 @@ to_load = spark.read.schema(schema) \
         f.col('i.statistics.viewCount').cast('bigint').alias('viewCount'),
         f.col('i.statistics.likeCount').cast('bigint').alias('likeCount'),
         f.col('i.statistics.favoriteCount').cast('bigint').alias('favoriteCount'),
-        f.col('i.statistics.commentCount').cast('bigint').alias('commentCount')
+        f.col('i.statistics.commentCount').cast('bigint').alias('commentCount'),
+        f.col('i.status.privacyStatus'),
+        f.col('i.status.uploadStatus')
     )
 
 if not to_load.isEmpty():
