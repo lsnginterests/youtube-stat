@@ -30,10 +30,10 @@ spark.sql('''
 local_silver_h_channel = spark.table('local.silver.h_channel')
 local_silver_s_channel = slicer.run()
 
-to_load = local_silver_s_channel.join(
-    other=local_silver_h_channel,
+to_load = local_silver_h_channel.join(
+    other=local_silver_s_channel,
     on='channel_id',
-    how='left'
+    how='inner'
 ).select(
     'channel_id',
     'created_at',
