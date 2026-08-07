@@ -38,7 +38,7 @@ class YoutubeClient:
         for start in range(0, len(video_ids), 50):
             batch = video_ids[start:start + 50]
             request = self._client.videos().list(
-                part = 'snippet,statistics,contentDetails',
+                part = 'snippet,statistics,contentDetails,status',
                 id = ','.join(batch)
             )
             response = request.execute()
