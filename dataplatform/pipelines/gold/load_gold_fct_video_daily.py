@@ -18,6 +18,7 @@ spark.sql('''
     create table if not exists local.gold.fct_video_daily (
         video_id string,
         channel_id string,
+        category_id string,
         calendar_dt date,
         views_cnt bigint,
         likes_cnt bigint,
@@ -31,16 +32,30 @@ spark.sql('''
     partitioned by (calendar_dt)
 ''')
 
-GRAIN_COLUMNS = ['video_id', 'channel_id', 'calendar_dt']
+GRAIN_COLUMNS = ['video_id', 'channel_id', 'category_id', 'calendar_dt']
 MEASURE_COLUMNS = ['views_cnt', 'likes_cnt', 'favorites_cnt', 'comments_cnt']
 
 local_silver_l_video_channel = spark.table('local.silver.l_video_channel').select('video_id', 'channel_id')
+local_silver_s_video = spark.table('local.silver.s_video').select(
+    f.col('video_id').alias('versioned_video_id'),
+    f.col('category_id'),
+    f.col('valid_from_dttm'),
+    f.col('valid_to_dttm')
+)
 local_silver_s_video_stats = slicer.run()
+
+version_on_date = (f.col('video_id') == f.col('versioned_video_id')) \
+    & (f.col('calendar_dt') >= f.col('valid_from_dttm')) \
+    & (f.col('valid_to_dttm').isNull() | (f.col('calendar_dt') < f.col('valid_to_dttm')))
 
 load_stats = local_silver_l_video_channel.join(
     other=local_silver_s_video_stats,
     on='video_id',
     how='inner'
+).join(
+    other=local_silver_s_video,
+    on=version_on_date,
+    how='left'
 ).select(*GRAIN_COLUMNS, *MEASURE_COLUMNS)
 
 boundary = load_stats.groupBy('video_id').agg(f.min('calendar_dt').alias('boundary_dt'))
