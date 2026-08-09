@@ -20,6 +20,9 @@ build-backend = "hatchling.build"
 packages = ["extract_load"]
 
 [dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
 spark = [
     "pyspark==3.5.1",
 ]
