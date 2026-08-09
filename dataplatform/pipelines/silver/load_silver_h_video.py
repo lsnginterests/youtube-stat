@@ -45,4 +45,4 @@ def run() -> None:
     if not to_load.isEmpty():
         loader = SCD1Loader(to_load, 'local.silver.h_video', ['video_id'], 'upsert')
         loader.run()
-        slicer.commit()
+    slicer.commit()

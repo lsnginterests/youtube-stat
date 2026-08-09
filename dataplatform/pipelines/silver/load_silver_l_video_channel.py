@@ -48,4 +48,4 @@ def run() -> None:
             mode='upsert'
         )
         loader.run()
-        slicer.commit()
+    slicer.commit()

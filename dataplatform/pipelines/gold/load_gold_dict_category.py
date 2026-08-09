@@ -31,4 +31,4 @@ def run() -> None:
     if not to_load.isEmpty():
         loader = SCD1Loader(to_load, 'local.gold.dict_category', ['category_id'], 'upsert')
         loader.run()
-        slicer.commit()
+    slicer.commit()

@@ -41,4 +41,4 @@ def run() -> None:
     if not load_stats.isEmpty():
         loader = SCD1Loader(load_stats, 'local.silver.s_video_stats', ['video_id', 'calendar_dt'], 'upsert')
         loader.run()
-        slicer.commit()
+    slicer.commit()

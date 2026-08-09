@@ -50,4 +50,4 @@ def run() -> None:
             rebuild_history_mode='from_dt'
         )
         loader.run()
-        slicer.commit()
+    slicer.commit()
