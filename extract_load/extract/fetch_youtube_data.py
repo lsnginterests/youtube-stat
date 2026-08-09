@@ -1,9 +1,9 @@
 from googleapiclient.discovery import build
-from config import settings
+from config import get_settings
 
 class YoutubeClient:
     def __init__(self):
-        self._client = build('youtube', 'v3', developerKey=settings.yt_api_key)
+        self._client = build('youtube', 'v3', developerKey=get_settings().yt_api_key)
 
     def get_channel_data(self, channel_id: str) -> dict:
         request = self._client.channels().list(

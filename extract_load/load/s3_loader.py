@@ -2,10 +2,11 @@ import boto3
 from datetime import datetime
 import json
 
-from config import settings
+from config import get_settings
 
 class S3RawSink:
     def __init__(self):
+        settings = get_settings()
         self._client = boto3.client(
             's3',
             endpoint_url=settings.s3_endpoint_url,

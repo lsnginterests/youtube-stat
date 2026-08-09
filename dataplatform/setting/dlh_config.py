@@ -1,16 +1,12 @@
 from pyspark.sql import SparkSession
 
-from config import settings
+from config import get_settings
 
 class DLHConfig:
 
-    RAW_PATH = f's3a://{settings.s3_bucket_raw}/youtube'
-    BRONZE_PATH = '/home/maxim/user/programming/youtube-stat/dataplatform/lakehouse/bronze'
-    SILVER_PATH = '/home/maxim/user/programming/youtube-stat/dataplatform/lakehouse/silver'
-    GOLD_PATH = '/home/maxim/user/programming/youtube-stat/dataplatform/lakehouse/gold'
-
     def __init__(self, session: SparkSession):
         self._session = session
+        self.RAW_PATH = f's3a://{get_settings().s3_bucket_raw}/youtube'
 
     def initiate_infrastructure(self):
         self._session.sql('create namespace if not exists local.bronze')

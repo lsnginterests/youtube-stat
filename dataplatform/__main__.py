@@ -69,13 +69,14 @@ def execute(names: list[str], date: str | None) -> None:
     try:
         for position, name in enumerate(names, 1):
             pipeline: Pipeline = BY_NAME[name]
-            print(f'[{position}/{len(names)}] {name}', end='', flush=True)
+            marker = f'[{position}/{len(names)}] {name}'
+            print(f'{marker} start', flush=True)
             started = time.monotonic()
             if pipeline.takes_date:
                 pipeline.run(date)
             else:
                 pipeline.run()
-            print(f' — {time.monotonic() - started:.1f} s', flush=True)
+            print(f'{marker} done in {time.monotonic() - started:.1f} s', flush=True)
     finally:
         spark.stop()
 

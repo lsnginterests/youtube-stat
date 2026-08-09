@@ -1,7 +1,7 @@
 from pathlib import Path
 from pyspark.sql import SparkSession
 
-from config import settings
+from config import get_settings
 
 ICEBERG_VERSION = '1.7.1'
 ICEBERG_PACKAGE = f'org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:{ICEBERG_VERSION}'
@@ -14,6 +14,7 @@ WAREHOUSE = Path(__file__).resolve().parent.parent.joinpath('lakehouse')
 
 
 def get_spark() -> SparkSession:
+    settings = get_settings()
     return (
         SparkSession.builder
         .appName('appLake')
