@@ -1,8 +1,10 @@
 from pyspark.sql import SparkSession
 
+from config import settings
+
 class DLHConfig:
 
-    RAW_PATH = '/home/maxim/user/programming/youtube-stat/dataplatform/raw/youtube'
+    RAW_PATH = f's3a://{settings.s3_bucket_raw}/youtube'
     BRONZE_PATH = '/home/maxim/user/programming/youtube-stat/dataplatform/lakehouse/bronze'
     SILVER_PATH = '/home/maxim/user/programming/youtube-stat/dataplatform/lakehouse/silver'
     GOLD_PATH = '/home/maxim/user/programming/youtube-stat/dataplatform/lakehouse/gold'
