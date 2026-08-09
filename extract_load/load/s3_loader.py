@@ -2,7 +2,7 @@ import boto3
 from datetime import datetime
 import json
 
-from extract_load import settings
+from config import settings
 
 class S3RawSink:
     def __init__(self):
