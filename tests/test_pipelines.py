@@ -38,6 +38,20 @@ def commit_statements(node: ast.AST) -> list[ast.Expr]:
     ]
 
 
+def test_every_pipeline_is_collected():
+    assert len(PIPELINE_FILES) == 18
+
+
+@pytest.mark.parametrize('path', PIPELINE_FILES, ids=lambda path: path.stem)
+def test_module_holds_nothing_but_run(path: Path):
+    tree, _ = parse_run(path)
+    stray = [
+        type(node).__name__ for node in tree.body
+        if not isinstance(node, (ast.Import, ast.ImportFrom, ast.FunctionDef))
+    ]
+    assert not stray, f'module level holds more than imports and run: {stray}'
+
+
 @pytest.mark.parametrize('path', PIPELINE_FILES, ids=lambda path: path.stem)
 def test_slicer_run_implies_commit(path: Path):
     _, run = parse_run(path)
