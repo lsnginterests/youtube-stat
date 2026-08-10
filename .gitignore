@@ -236,3 +236,7 @@ dataplatform/etl_tools/slicer/slices.json*
 
 # Сырой слой — выгрузка extract, воспроизводится прогоном по API
 dataplatform/raw/
+
+airflow/logs/
+airflow/plugins/
+airflow/config/
