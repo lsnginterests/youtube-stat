@@ -3,6 +3,8 @@ from datetime import datetime
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.sdk import DAG
 
+from assets import LAKEHOUSE
+
 PROJECT_DIR = '/home/maxim/user/programming/youtube-stat'
 
 with DAG(
@@ -29,6 +31,7 @@ with DAG(
     gold = BashOperator(
         task_id='gold',
         bash_command='python -m dataplatform run-layer gold',
+        outlets=[LAKEHOUSE],
     )
 
     extract >> bronze >> silver >> gold
