@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from airflow.providers.standard.operators.bash import BashOperator
@@ -5,7 +6,7 @@ from airflow.sdk import DAG
 
 from assets import LAKEHOUSE
 
-PROJECT_DIR = '/home/maxim/user/programming/youtube-stat'
+PROJECT_DIR = os.environ['PROJECT_DIR']
 
 with DAG(
     dag_id='youtube_stat',

@@ -11,7 +11,8 @@ x-airflow-env: &airflow-env
   AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET:-airflow_jwt_secret}
   AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
   AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-  PYTHONPATH: /home/maxim/user/programming/youtube-stat:/opt/airflow/dags
+  PROJECT_DIR: ${PROJECT_DIR:?run make from the repository root, it sets PROJECT_DIR}
+  PYTHONPATH: ${PROJECT_DIR:?}:/opt/airflow/dags
   S3_ENDPOINT_URL: http://minio:9000
 
 x-airflow-common: &airflow-common
@@ -31,8 +32,8 @@ x-airflow-common: &airflow-common
     - ./logs:/opt/airflow/logs
     - ./config:/opt/airflow/config
     - ./plugins:/opt/airflow/plugins
-    - /home/maxim/user/programming/youtube-stat:/home/maxim/user/programming/youtube-stat
-    - /home/maxim/.ivy2:/home/airflow/.ivy2
+    - ${PROJECT_DIR:?}:${PROJECT_DIR:?}
+    - ${HOME}/.ivy2:/home/airflow/.ivy2
   restart: always
 
 x-airflow-depends: &airflow-depends
