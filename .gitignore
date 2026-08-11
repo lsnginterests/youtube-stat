@@ -240,3 +240,6 @@ dataplatform/raw/
 airflow/logs/
 airflow/plugins/
 airflow/config/
+
+# local sandbox
+main.py
