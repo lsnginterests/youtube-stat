@@ -17,12 +17,12 @@ with DAG(
 ):
     extract = BashOperator(
         task_id='extract',
-        bash_command='python -m extract_load.run',
+        bash_command='python -m extract_load.run --date {{ dag_run.run_after | ds }}',
         retries=2,
     )
     bronze = BashOperator(
         task_id='bronze',
-        bash_command='python -m dataplatform run-layer bronze',
+        bash_command='python -m dataplatform run-layer bronze --date {{ dag_run.run_after | ds }}',
     )
     silver = BashOperator(
         task_id='silver',
