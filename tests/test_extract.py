@@ -25,6 +25,22 @@ def clock_calls_in(path: Path) -> list[str]:
     ]
 
 
+class RecordingClient:
+    def __init__(self):
+        self.keys = []
+
+    def put_object(self, **kwargs) -> None:
+        self.keys.append(kwargs['Key'])
+
+
+def build_sink() -> tuple[S3RawSink, RecordingClient]:
+    sink = object.__new__(S3RawSink)
+    client = RecordingClient()
+    sink._client = client
+    sink.bucket = 'bronze'
+    return sink, client
+
+
 def test_sink_does_not_read_the_clock():
     found = clock_calls_in(SINK_FILE)
     assert not found, f'S3RawSink decides the ingestion date itself instead of taking it: {found}'
@@ -51,22 +67,6 @@ def test_date_defaults_to_today():
 def test_malformed_date_is_rejected(value: str):
     with pytest.raises(SystemExit):
         run.build_parser().parse_args(['--date', value])
-
-
-class RecordingClient:
-    def __init__(self):
-        self.keys = []
-
-    def put_object(self, **kwargs) -> None:
-        self.keys.append(kwargs['Key'])
-
-
-def build_sink() -> tuple[S3RawSink, RecordingClient]:
-    sink = object.__new__(S3RawSink)
-    client = RecordingClient()
-    sink._client = client
-    sink.bucket = 'bronze'
-    return sink, client
 
 
 def test_snapshot_paths_carry_the_given_date():

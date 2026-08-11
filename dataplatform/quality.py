@@ -139,7 +139,7 @@ def count_violations(dataframe: DataFrame, columns: tuple[str, ...],
     return {column: counted[column] for column in columns if counted[column]}
 
 
-def describe(counted: dict[str, int]) -> str:
+def format_counts(counted: dict[str, int]) -> str:
     return ', '.join(f'{column}: {count}' for column, count in counted.items())
 
 
@@ -149,17 +149,18 @@ def not_empty(dataframe: DataFrame) -> Result:
 
 def no_duplicates(dataframe: DataFrame, key_columns: tuple[str, ...]) -> Result:
     duplicated = dataframe.groupBy(*key_columns).count().where(f.col('count') > 1)
-    return Result('no_duplicates', duplicated.count(), f'duplicated keys ({", ".join(key_columns)})')
+    key = ', '.join(key_columns)
+    return Result('no_duplicates', duplicated.count(), f'duplicated keys ({key})')
 
 
 def no_nulls_in_key(dataframe: DataFrame, key_columns: tuple[str, ...]) -> Result:
     counted = count_violations(dataframe, key_columns, lambda column: f.col(column).isNull())
-    return Result('no_nulls_in_key', sum(counted.values()), f'null keys ({describe(counted)})')
+    return Result('no_nulls_in_key', sum(counted.values()), f'null keys ({format_counts(counted)})')
 
 
 def no_negative(dataframe: DataFrame, measure_columns: tuple[str, ...]) -> Result:
     counted = count_violations(dataframe, measure_columns, lambda column: f.col(column) < 0)
-    return Result('no_negative', sum(counted.values()), f'negative measures ({describe(counted)})')
+    return Result('no_negative', sum(counted.values()), f'negative measures ({format_counts(counted)})')
 
 
 def single_open_version(dataframe: DataFrame, business_key: str) -> Result:
