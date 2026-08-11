@@ -3,6 +3,7 @@ import sys
 import time
 from datetime import datetime
 
+from dataplatform import quality
 from dataplatform.registry import BY_NAME, LAYERS, Pipeline, graph, layer, order, with_deps
 from dataplatform.setting.spark_session import get_spark
 
@@ -30,6 +31,10 @@ def build_parser() -> argparse.ArgumentParser:
     layer_parser.add_argument('--with-deps', action='store_true', help='run upstream layers first')
 
     all_parser = subparsers.add_parser('run-all', help='run every pipeline')
+
+    dq_parser = subparsers.add_parser('dq', help='run data quality checks on built tables')
+    dq_parser.add_argument('tables', nargs='*', metavar='TABLE',
+                           help='tables to check, defaults to every declared table')
 
     for command in (run_parser, layer_parser, all_parser):
         command.set_defaults(parser=command)
@@ -81,12 +86,43 @@ def execute(names: list[str], date: str | None) -> None:
         spark.stop()
 
 
+def show_results(table: quality.Table, results: list[quality.Result]) -> None:
+    width = max(len(result.check) for result in results)
+    print(table.full_name)
+    for result in results:
+        if result.passed:
+            print(f'  {result.check:{width}}  ok')
+        else:
+            print(f'  {result.check:{width}}  {result.violations}  {result.detail}')
+
+
+def check_tables(tables: list[quality.Table]) -> None:
+    spark = get_spark()
+    failed = 0
+    try:
+        for table in tables:
+            results = quality.check(spark, table)
+            failed += sum(not result.passed for result in results)
+            show_results(table, results)
+    finally:
+        spark.stop()
+    print(f'\n{len(tables)} tables checked, {failed} checks failed')
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
     if args.command == 'list':
         show_list()
+        return 0
+
+    if args.command == 'dq':
+        try:
+            tables = quality.validate_names(args.tables)
+        except ValueError as error:
+            parser.error(str(error))
+        check_tables(tables)
         return 0
 
     names = select(args)
