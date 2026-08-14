@@ -228,14 +228,10 @@ extract_load/load/local_loader.py
 
 # Данные и артефакты Spark/Iceberg — генерируются локально, в git не хранятся
 spark-warehouse/
-dataplatform/lakehouse/*
 
 # Состояние пайплайнов (watermark-реестр), а не конфигурация
 # glob покрывает и сам реестр, и .lock, и временные .tmp при атомарной записи
 dataplatform/etl_tools/slicer/slices.json*
-
-# Сырой слой — выгрузка extract, воспроизводится прогоном по API
-dataplatform/raw/
 
 airflow/logs/
 airflow/plugins/

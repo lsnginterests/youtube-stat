@@ -26,10 +26,28 @@ services:
     entrypoint: >
       /bin/sh -c "
       mc alias set local http://minio:9000 minioadmin minioadmin;
-      mc mb -p local/bronze local/silver local/gold || true;
-      mc anonymous set none local/bronze;
+      mc mb -p local/raw local/lakehouse || true;
+      mc anonymous set none local/raw local/lakehouse;
       exit 0;
       "
 
+  catalog-db:
+    image: postgres:16
+    container_name: yt-catalog-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: iceberg
+      POSTGRES_PASSWORD: iceberg
+      POSTGRES_DB: iceberg
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iceberg -d iceberg"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   minio-data:
+  catalog-db-data:

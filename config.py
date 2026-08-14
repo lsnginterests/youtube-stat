@@ -11,8 +11,10 @@ class Settings(BaseSettings):
     s3_access_key: str
     s3_secret_key: str
     s3_bucket_raw: str
-    s3_bucket_silver: str
-    s3_bucket_gold: str = "gold"
+    s3_bucket_warehouse: str
+    catalog_uri: str
+    catalog_user: str
+    catalog_password: str
 
     model_config = SettingsConfigDict(
         env_file=_PROJECT_ROOT / '.env',
