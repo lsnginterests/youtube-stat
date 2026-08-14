@@ -92,13 +92,8 @@ TABLES: tuple[Table, ...] = (
         key_columns=('calendar_dt',)
     ),
     Table(
-        name='gold.dict_category',
+        name='gold.dim_category',
         key_columns=('category_id',)
-    ),
-    Table(
-        name='gold.dict_video_channel',
-        key_columns=('video_id',),
-        references=(('video_id', 'gold.dim_video'), ('channel_id', 'gold.dim_channel'))
     ),
     Table(
         name='gold.dim_channel',
@@ -108,7 +103,8 @@ TABLES: tuple[Table, ...] = (
     Table(
         name='gold.dim_video',
         key_columns=('video_id', 'valid_from_dttm'),
-        business_key='video_id'
+        business_key='video_id',
+        references=(('channel_id', 'gold.dim_channel'), ('category_id', 'gold.dim_category'))
     ),
     Table(
         name='gold.fct_video_daily',
@@ -117,14 +113,14 @@ TABLES: tuple[Table, ...] = (
         references=(
             ('video_id', 'gold.dim_video'),
             ('channel_id', 'gold.dim_channel'),
-            ('category_id', 'gold.dict_category'),
+            ('category_id', 'gold.dim_category'),
             ('calendar_dt', 'gold.dim_calendar')
         )
     ),
     Table(
         name='gold.fct_channel_daily',
         key_columns=('channel_id', 'calendar_dt'),
-        measure_columns=('subscribers_cnt', 'videos_cnt', 'views_total', 'likes_total', 'comments_total'),
+        measure_columns=('subscribers_cnt', 'videos_cnt', 'views_total', 'likes_total', 'favorites_total', 'comments_total'),
         references=(('channel_id', 'gold.dim_channel'), ('calendar_dt', 'gold.dim_calendar'))
     )
 )

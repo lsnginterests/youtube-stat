@@ -16,10 +16,12 @@ def run() -> None:
     spark.sql('''
         create table if not exists local.gold.dim_video (
             video_id string,
+            channel_id string,
             created_at timestamp,
             title string,
             description string,
             category_id string,
+            category_name string,
             live_broadcast_content string,
             default_language string,
             duration_sec int,
@@ -40,18 +42,30 @@ def run() -> None:
     ''')
 
     local_silver_h_video = spark.table('local.silver.h_video')
+    local_silver_l_video_channel = spark.table('local.silver.l_video_channel').select('video_id', 'channel_id')
+    local_silver_ref_category = spark.table('local.silver.ref_category').select('category_id', 'category_name')
     local_silver_s_video = slicer.run()
 
     to_load = local_silver_h_video.join(
         other=local_silver_s_video,
         on='video_id',
         how='inner'
+    ).join(
+        other=local_silver_l_video_channel,
+        on='video_id',
+        how='left'
+    ).join(
+        other=local_silver_ref_category,
+        on='category_id',
+        how='left'
     ).select(
         'video_id',
+        'channel_id',
         'created_at',
         'title',
         'description',
         'category_id',
+        'category_name',
         'live_broadcast_content',
         'default_language',
         'duration_sec',

@@ -5,7 +5,7 @@ from dataplatform.etl_tools import Slicer, SliceRegistry
 
 def run() -> None:
     spark = get_spark()
-    registry = SliceRegistry('load_gold_dict_category')
+    registry = SliceRegistry('load_gold_dim_category')
     slicer = Slicer(
         session=spark,
         registry=registry,
@@ -14,7 +14,7 @@ def run() -> None:
     )
 
     spark.sql('''
-        create table if not exists local.gold.dict_category (
+        create table if not exists local.gold.dim_category (
             category_id string,
             category_name string,
             processed_dttm timestamp
@@ -29,6 +29,6 @@ def run() -> None:
     )
 
     if not to_load.isEmpty():
-        loader = SCD1Loader(to_load, 'local.gold.dict_category', ['category_id'], 'upsert')
+        loader = SCD1Loader(to_load, 'local.gold.dim_category', ['category_id'], 'upsert')
         loader.run()
     slicer.commit()

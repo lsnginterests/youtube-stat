@@ -39,7 +39,7 @@ def commit_statements(node: ast.AST) -> list[ast.Expr]:
 
 
 def test_every_pipeline_is_collected():
-    assert len(PIPELINE_FILES) == 18
+    assert len(PIPELINE_FILES) == 17
 
 
 @pytest.mark.parametrize('path', PIPELINE_FILES, ids=lambda path: path.stem)

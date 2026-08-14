@@ -11,11 +11,14 @@ def run() -> None:
             calendar_dt date,
             monthday int,
             month int,
+            month_name string,
             quarter int,
             year int,
+            year_month string,
             week_of_year int,
             iso_year int,
             weekday int,
+            day_name string,
             is_weekend boolean,
             processed_dttm timestamp
         ) using iceberg
@@ -26,11 +29,14 @@ def run() -> None:
         f.col('calendar_dt'),
         (f.extract(f.lit('day'), 'calendar_dt').cast('int').alias('monthday')),
         f.month('calendar_dt').alias('month'),
+        f.date_format('calendar_dt', 'MMMM').alias('month_name'),
         f.quarter('calendar_dt').alias('quarter'),
         f.year('calendar_dt').alias('year'),
+        f.date_format('calendar_dt', 'yyyy-MM').alias('year_month'),
         f.weekofyear('calendar_dt').alias('week_of_year'),
         f.extract(f.lit('yearofweek'), 'calendar_dt').alias('iso_year'),
-        (f.weekday('calendar_dt') + 1).alias('weekday')
+        (f.weekday('calendar_dt') + 1).alias('weekday'),
+        f.date_format('calendar_dt', 'EEEE').alias('day_name')
     ).withColumn('is_weekend', f.col('weekday') > 5)
 
     if not to_load.isEmpty():

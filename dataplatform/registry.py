@@ -18,11 +18,10 @@ from dataplatform.pipelines.silver import (
     load_silver_s_channel
 )
 from dataplatform.pipelines.gold import (
-    load_gold_dict_category,
+    load_gold_dim_category,
     load_gold_dim_calendar,
     load_gold_dim_channel,
     load_gold_fct_channel_daily,
-    load_gold_dict_video_channel,
     load_gold_fct_video_daily,
     load_gold_dim_video
 )
@@ -115,16 +114,10 @@ PIPELINES: tuple[Pipeline, ...] = (
         outputs=('local.gold.dim_calendar',)
     ),
     Pipeline(
-        name='gold.dict_category',
-        run=load_gold_dict_category.run,
+        name='gold.dim_category',
+        run=load_gold_dim_category.run,
         inputs=('local.silver.ref_category',),
-        outputs=('local.gold.dict_category',)
-    ),
-    Pipeline(
-        name='gold.dict_video_channel',
-        run=load_gold_dict_video_channel.run,
-        inputs=('local.silver.l_video_channel',),
-        outputs=('local.gold.dict_video_channel',)
+        outputs=('local.gold.dim_category',)
     ),
     Pipeline(
         name='gold.dim_channel',
@@ -135,7 +128,12 @@ PIPELINES: tuple[Pipeline, ...] = (
     Pipeline(
         name='gold.dim_video',
         run=load_gold_dim_video.run,
-        inputs=('local.silver.h_video', 'local.silver.s_video'),
+        inputs=(
+            'local.silver.h_video',
+            'local.silver.l_video_channel',
+            'local.silver.ref_category',
+            'local.silver.s_video'
+        ),
         outputs=('local.gold.dim_video',)
     ),
     Pipeline(
