@@ -73,9 +73,15 @@ def run() -> None:
     sliced_channels = local_bronze_videos.groupBy(f.col('channelId').alias('channel_id')) \
         .agg(f.min(f.col('calendar_dt').cast('timestamp')).alias('missing_from_dttm'))
 
+    snapshot_dates = local_bronze_videos.select('calendar_dt').distinct()
+    snapshot_videos = spark.table('local.bronze.videos') \
+        .join(other=snapshot_dates, on='calendar_dt', how='inner') \
+        .select(f.col('id').alias('video_id')) \
+        .distinct()
+
     known_videos = spark.table('local.silver.l_video_channel').select('video_id', 'channel_id') \
         .join(other=sliced_channels, on='channel_id', how='inner') \
-        .join(other=load_videos.select('video_id'), on='video_id', how='left_anti') \
+        .join(other=snapshot_videos, on='video_id', how='left_anti') \
         .join(other=spark.table('local.silver.h_video'), on='video_id', how='inner') \
         .where(f.col('created_at') <= f.col('missing_from_dttm')) \
         .select('video_id', 'missing_from_dttm')
